@@ -40,14 +40,18 @@ public class CollaborativeFilteringExample {
 //        Encoder<Rating> ratingEncoder = Encoders.bean(Rating.class);
 //        Dataset<Row> ratings = spark.createDataFrame(ratingsRDD, Rating.class);
         // Calculate users' ratings means
-        Dataset<Row> userMean = ratings
-                .groupBy(ratings.col("userId"))
-                .agg(avg(ratings.col("rating")));
-        userMean.show();
 
-        Dataset<Row> normalized = ratings.join(userMean, ratings.col("userId")
-                .equalTo(userMean.col("userId")))
-                .withColumn("Normalized", abs(coalesce(col("rating"), lit(0)).minus(coalesce(col("avg(rating)"), lit(0)))));
+        ratings.withColumn("avg(rating)", avg(col("rating")));
+        ratings.groupBy("userId").agg(avg("rating")).show();
+//                .agg(avg(ratings.col("rating")));
+        ratings.show();
+
+        Dataset<Row> normalized = ratings
+//                .join(userMean, ratings.col("userId")
+//                .equalTo(userMean.col("userId")))
+                .withColumn("Normalized", abs(coalesce(col("rating"), lit(0)).minus(coalesce(col("avg(rating)"), lit(0)))))
+                .withColumn("normalized_rating", col("Normalized").divide(countDistinct(col("userId"))))
+                .withColumn("predict_rating", col("rating").minus("normalized_rating"));
         normalized.show();
 //        List<Row> data = Arrays.asList(
 //                RowFactory.create(Vectors.dense(2.0, 3.0, 5.0), 1.0),
@@ -74,12 +78,13 @@ public class CollaborativeFilteringExample {
 //        System.out.println("without weight: mean = " + result2.<Vector>getAs(0).toString() +
 //                ", variance = " + result2.<Vector>getAs(1).toString());
 
-        Encoder<MatrixEntry> matrixEntryEncoder = Encoders.bean(MatrixEntry.class);
-        JavaRDD<MatrixEntry> r = normalized.map((MapFunction<Row, MatrixEntry>) row -> new MatrixEntry(Integer.valueOf(row.getInt(0)), Integer.valueOf(row.getInt(1)), Double.valueOf(row.getDouble(6))), matrixEntryEncoder).javaRDD();
-        CoordinateMatrix coordinateMatrix = new CoordinateMatrix(r.rdd());
-
-        coordinateMatrix.entries().saveAsObjectFile("matrix.txt");
-
+//        *-------------------------------------*
+//        Encoder<MatrixEntry> matrixEntryEncoder = Encoders.bean(MatrixEntry.class);
+//        JavaRDD<MatrixEntry> r = normalized.map((MapFunction<Row, MatrixEntry>) row -> new MatrixEntry(Integer.valueOf(row.getInt(0)), Integer.valueOf(row.getInt(1)), Double.valueOf(row.getDouble(6))), matrixEntryEncoder).javaRDD();
+//        CoordinateMatrix coordinateMatrix = new CoordinateMatrix(r.rdd());
+//
+//        coordinateMatrix.entries().saveAsObjectFile("matrix.txt");
+//        *--------------------------------------*
 
 
 //        Dataset<Row>[] splits = ratings.randomSplit(new double[]{0.8, 0.2});
