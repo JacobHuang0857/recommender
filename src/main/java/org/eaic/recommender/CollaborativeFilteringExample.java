@@ -27,9 +27,12 @@ public class CollaborativeFilteringExample {
                         "/Users/huangchangmai/Downloads/datalake-8660abe96d5e.json");
 
         Dataset<Row> ratings = spark
-                .read().csv("ratings_original.csv")
-                .toDF("userId", "movieId", "rating", "timestamp");
-
+                .read()
+                .option("inferSchema", true)
+                .option("header", true)
+                .csv("ratings_original.csv");
+//                .toDF("userId", "movieId", "rating", "timestamp");
+        ratings.show();
 //        JavaRDD<Rating> ratingsRDD = spark
 //                .read().textFile("data/ratings_original.csv").javaRDD()
 //                .map(Rating::parseRating);
@@ -40,6 +43,7 @@ public class CollaborativeFilteringExample {
         Dataset<Row> userMean = ratings
                 .groupBy(ratings.col("userId"))
                 .agg(avg(ratings.col("rating")));
+        userMean.show();
 
         Dataset<Row> normalized = ratings.join(userMean, ratings.col("userId")
                 .equalTo(userMean.col("userId")))
@@ -71,9 +75,8 @@ public class CollaborativeFilteringExample {
 //                ", variance = " + result2.<Vector>getAs(1).toString());
 
         Encoder<MatrixEntry> matrixEntryEncoder = Encoders.bean(MatrixEntry.class);
-        JavaRDD<MatrixEntry> r = normalized.map((MapFunction<Row, MatrixEntry>) row -> new MatrixEntry(Integer.valueOf(row.getString(0)), Integer.valueOf(row.getString(1)), Double.valueOf(row.getString(6))), matrixEntryEncoder).javaRDD();
+        JavaRDD<MatrixEntry> r = normalized.map((MapFunction<Row, MatrixEntry>) row -> new MatrixEntry(Integer.valueOf(row.getInt(0)), Integer.valueOf(row.getInt(1)), Double.valueOf(row.getDouble(6))), matrixEntryEncoder).javaRDD();
         CoordinateMatrix coordinateMatrix = new CoordinateMatrix(r.rdd());
-
 
         coordinateMatrix.entries().saveAsObjectFile("matrix.txt");
 
