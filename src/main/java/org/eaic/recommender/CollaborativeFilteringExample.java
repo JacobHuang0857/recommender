@@ -41,10 +41,10 @@ public class CollaborativeFilteringExample {
 //        Dataset<Row> ratings = spark.createDataFrame(ratingsRDD, Rating.class);
         // Calculate users' ratings means
 
-        ratings.withColumn("avg(rating)", avg(col("rating")));
-        ratings.groupBy("userId").agg(avg("rating")).show();
+//        ratings.withColumn("avg(rating)", avg(col("rating")));
+        Dataset<Row> userMean =  ratings.groupBy("userId").agg(avg("rating"));
 //                .agg(avg(ratings.col("rating")));
-        ratings.show();
+        userMean.show();
 
         Dataset<Row> normalized = ratings
 //                .join(userMean, ratings.col("userId")
