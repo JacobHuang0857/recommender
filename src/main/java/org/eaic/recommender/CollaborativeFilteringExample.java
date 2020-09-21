@@ -67,7 +67,7 @@ public class CollaborativeFilteringExample {
 //                .withColumn("normalizedRatingSum", sum(grouping("userId")));
 //        Dataset<Row> predictRating = normalizedRating.withColumn("predictRating", col("avg(rating)").plus("sum(normalizedRating)"));
         predictRating.show();
-
+        spark.stop();
 
 
 //        List<Row> data = Arrays.asList(
