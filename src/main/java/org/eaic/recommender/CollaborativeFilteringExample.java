@@ -40,19 +40,24 @@ public class CollaborativeFilteringExample {
 //        Encoder<Rating> ratingEncoder = Encoders.bean(Rating.class);
 //        Dataset<Row> ratings = spark.createDataFrame(ratingsRDD, Rating.class);
         // Calculate users' ratings means
-
-//        ratings.withColumn("avg(rating)", avg(col("rating")));
-        Dataset<Row> userMean =  ratings.groupBy("userId").agg(avg("rating"));
-//                .agg(avg(ratings.col("rating")));
+        Dataset<Row> userMean = ratings
+                .groupBy(ratings.col("userId").as("userIdMean"))
+                .agg(avg(ratings.col("rating")));
         userMean.show();
 
         Dataset<Row> normalized = ratings
-//                .join(userMean, ratings.col("userId")
-//                .equalTo(userMean.col("userId")))
-                .withColumn("Normalized", abs(coalesce(col("rating"), lit(0)).minus(coalesce(col("avg(rating)"), lit(0)))))
-                .withColumn("normalized_rating", col("Normalized").divide(countDistinct(col("userId"))))
-                .withColumn("predict_rating", col("rating").minus("normalized_rating"));
-        normalized.show();
+                .join(userMean, ratings.col("userId")
+                .equalTo(userMean.col("userIdMean")))
+                .withColumn("normalized", abs(coalesce(col("rating"), lit(0)).minus(coalesce(col("avg(rating)"), lit(0)))));
+
+        Dataset<Row> normalizedRating = normalized
+                .withColumn("normalizedRating", col("normalized").divide(normalized.select("userId").distinct().count()))
+                .groupBy("userId").sum("normalizedRating").as("normalizedRatingSum").join(normalized, normalized.col("userId").equalTo(normalized.col("userIdMean")));
+//                .withColumn("normalizedRatingSum", sum(grouping("userId")));
+//        Dataset<Row> predictRating = normalizedRating.withColumn("predictRating", col("rating").minus("normalizedRating"));
+        normalizedRating.show();
+
+
 //        List<Row> data = Arrays.asList(
 //                RowFactory.create(Vectors.dense(2.0, 3.0, 5.0), 1.0),
 //                RowFactory.create(Vectors.dense(4.0, 6.0, 7.0), 2.0)
