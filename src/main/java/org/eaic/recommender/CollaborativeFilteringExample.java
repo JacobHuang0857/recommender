@@ -49,13 +49,25 @@ public class CollaborativeFilteringExample {
                 .join(userMean, ratings.col("userId")
                 .equalTo(userMean.col("userIdMean")))
                 .withColumn("normalized", abs(coalesce(col("rating"), lit(0)).minus(coalesce(col("avg(rating)"), lit(0)))));
+        normalized.show();
 
-        Dataset<Row> normalizedRating = normalized
-                .withColumn("normalizedRating", col("normalized").divide(normalized.select("userId").distinct().count()))
-                .groupBy("userId").sum("normalizedRating").as("normalizedRatingSum").join(normalized, normalized.col("userId").equalTo(normalized.col("userIdMean")));
-//                .withColumn("normalizedRatingSum", sum(grouping("userId")));
-//        Dataset<Row> predictRating = normalizedRating.withColumn("predictRating", col("rating").minus("normalizedRating"));
+        Dataset<Row> normalizedRating = normalized.groupBy("movieId").sum("normalized");
+//        Dataset<Row> normalizedRating = normalized
+//                .withColumn("normalizedRating", col("normalized").divide(normalized.select("userId").distinct().count()))
+//                .groupBy("userId").sum("normalizedRating").as("normalizedRatingSum").join(normalized, normalized.col("userId").equalTo(normalized.col("userIdMean")));
         normalizedRating.show();
+        Dataset<Row> averageNormalized = normalizedRating.withColumn("averageNormalized", col("sum(normalized)").divide(normalized.select("movieId").distinct().count()));
+        averageNormalized.show();
+
+        Dataset<Row> predictRating = averageNormalized
+                .join(normalized, normalized.col("movieId")
+                        .equalTo(averageNormalized.col("movieId")))
+                .withColumn("predictRating", col("avg(rating)").plus(col("averageNormalized")));
+
+//                .withColumn("normalizedRatingSum", sum(grouping("userId")));
+//        Dataset<Row> predictRating = normalizedRating.withColumn("predictRating", col("avg(rating)").plus("sum(normalizedRating)"));
+        predictRating.show();
+
 
 
 //        List<Row> data = Arrays.asList(
