@@ -3,11 +3,11 @@ package org.eaic.recommender;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.mllib.linalg.Vector;
 import org.apache.spark.mllib.linalg.distributed.CoordinateMatrix;
 import org.apache.spark.mllib.linalg.distributed.MatrixEntry;
 import org.apache.spark.sql.*;
 
-import java.io.Serializable;
 
 import static org.apache.spark.sql.functions.*;
 import static org.apache.spark.sql.functions.lit;
@@ -143,47 +143,9 @@ public class CollaborativeFilteringExample {
 
     }
 
-    public static class Rating implements Serializable {
-        private int userId;
-        private int movieId;
-        private double rating;
-        private long timestamp;
+    private JavaRDD<Vector> genRatingMatrix (Dataset<Row> ratings) {
 
-        public Rating() {}
-
-        public Rating(int userId, int movieId, double rating, long timestamp) {
-            this.userId = userId;
-            this.movieId = movieId;
-            this.rating = rating;
-            this.timestamp = timestamp;
-        }
-
-        public int getUserId() {
-            return userId;
-        }
-
-        public int getMovieId() {
-            return movieId;
-        }
-
-        public double getRating() {
-            return rating;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public static Rating parseRating(String str) {
-            String[] fields = str.split(",");
-            if (fields.length != 4) {
-                throw new IllegalArgumentException("Each line must contain 4 fields");
-            }
-            int userId = Integer.parseInt(fields[0]);
-            int movieId = Integer.parseInt(fields[1]);
-            double rating = Double.parseDouble(fields[2]);
-            long timestamp = Long.parseLong(fields[3]);
-            return new Rating(userId, movieId, rating, timestamp);
-        }
+        return null;
     }
+
 }
