@@ -60,12 +60,13 @@ public class Practice {
 
     class SolutionForDeepCopy {
         public Node copyRandomList(Node head) {
-            do {
+            if (head.next == null) {
                 Node copy = new Node(head.val);
-                if (head.next != null) {
-                    Node next = new Node(head.next.val);
-                }
-            } while (head.next != null);
+                copy.random = head.random;
+                return copy;
+            }
+            return copyRandomList(head);
         }
     }
+
 }
