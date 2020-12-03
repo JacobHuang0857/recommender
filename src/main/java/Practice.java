@@ -1,3 +1,5 @@
+import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -102,5 +104,27 @@ public class Practice {
         stack.forEach(x-> result.add(x));
         return result;
     }
+
+
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        int sum = l1.val + l2.val;
+        int a = sum / 10;
+        int b = sum % 10;
+        if (l1.next == null && l2.next == null){
+            ListNode listNode = new ListNode(b);
+            if (a != 0) {
+                ListNode next = new ListNode(a);
+                listNode.next = next;
+            }
+            return  listNode;
+        }
+        ListNode listNode = new ListNode(b);
+        if (a != 0){
+            l1.next.val += a;
+        }
+        listNode.next = addTwoNumbers(l1.next, l2.next);
+        return listNode;
+    }
+
 
 }
