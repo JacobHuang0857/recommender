@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 public class Practice {
     public static void main() {
 
@@ -14,24 +17,15 @@ public class Practice {
      */
     class Solution {
         public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
-            ListNode listNode = new ListNode();
-            do {
-                if (l1.val < l2.val)
-                    listNode = l1;
-                else
-                    listNode = l2;
-                l1 = l1.next;
-                l2 = l2.next;
-            } while (l1.next != null && l2.next != null);
-            while (l1.next != null ) {
-                listNode.next = l1;
-                l1 = l1.next;
-            }
-            while (l2.next != null) {
-                listNode.next = l2;
-                l2 = l2.next;
-            }
-            return listNode;
+            if (l1==null)
+                return l2;
+            else if (l2==null)
+                return l1;
+            if (l1.val<l2.val)
+                return new ListNode(l1.val, mergeTwoLists(l1.next, l2));
+            else
+                return new ListNode(l2.val, mergeTwoLists(l1, l2.next));
+
         }
     }
 
@@ -60,12 +54,22 @@ public class Practice {
 
     class SolutionForDeepCopy {
         public Node copyRandomList(Node head) {
-            if (head.next == null) {
-                Node copy = new Node(head.val);
-                copy.random = head.random;
-                return copy;
+            if (head == null)
+                return null;
+            Map<Node, Node> map = new HashMap<>();
+            Node node = head;
+            while (node != null){
+                map.put(node, new Node(node.val));
+                node = node.next;
             }
-            return copyRandomList(head);
+
+            node = head;
+            while (node != null){
+                map.get(node).next = map.get(node.next);
+                map.get(node).random = map.get(node.random);
+                node = node.next;
+            }
+            return map.get(head);
         }
     }
 
