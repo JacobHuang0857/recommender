@@ -126,5 +126,23 @@ public class Practice {
         return listNode;
     }
 
+    public int lengthOfLongestSubstring(String s) {
+        int max = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if ((s.length() - i) <= max )
+                break;
+            Stack<Character> chars = new Stack<Character>();
+            for (int j = i; j < s.length(); j++) {
+                if(!chars.contains(s.charAt(j)))
+                    chars.push(s.charAt(j));
+                else {
+                    if (chars.size() > max)
+                        max = chars.size();
+                    break;
+                }
+            }
+        }
+        return max;
+    }
 
 }
