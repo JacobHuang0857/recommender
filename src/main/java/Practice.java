@@ -1,15 +1,9 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
-
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 public class Practice {
     public static void main(String[] args) {
         generateParenthesis(3).stream().forEach(x -> System.out.print(x));
+        System.out.println(mostDuplicateSum(new int[] {1,2,3,4,5,6,7,8,9}));
     }
     /**
      * Definition for singly-linked list.
@@ -371,5 +365,21 @@ public class Practice {
             }
         }
 
+    }
+
+    public static int mostDuplicateSum (int[] numbers) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < numbers.length; i++){
+            for (int j = i+1; j < numbers.length; j ++) {
+                int sum = numbers[i] + numbers[j];
+                if (map.containsKey(sum)) {
+                    int temp = map.get(sum)+1;
+                    map.put(sum, temp);
+                } else {
+                    map.put(sum, 1);
+                }
+            }
+        }
+        return map.values().stream().max(Integer::compare).get();
     }
 }
