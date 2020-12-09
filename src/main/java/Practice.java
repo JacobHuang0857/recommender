@@ -4,7 +4,7 @@ public class Practice {
     public static void main(String[] args) {
 //        generateParenthesis(3).stream().forEach(x -> System.out.print(x));
 //        System.out.println(mostDuplicateSum(new int[] {1,2,3,4,5,6,7,8,9}));
-        System.out.println(numNumDecoding("12"));
+        System.out.println(numDecoding("12"));
     }
     /**
      * Definition for singly-linked list.
