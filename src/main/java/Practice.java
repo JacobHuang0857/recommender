@@ -2,8 +2,9 @@ import java.util.*;
 
 public class Practice {
     public static void main(String[] args) {
-        generateParenthesis(3).stream().forEach(x -> System.out.print(x));
-        System.out.println(mostDuplicateSum(new int[] {1,2,3,4,5,6,7,8,9}));
+//        generateParenthesis(3).stream().forEach(x -> System.out.print(x));
+//        System.out.println(mostDuplicateSum(new int[] {1,2,3,4,5,6,7,8,9}));
+        System.out.println(numNumDecoding("12"));
     }
     /**
      * Definition for singly-linked list.
@@ -409,4 +410,17 @@ public class Practice {
         return results;
     }
 
+    public static int numDecoding(String s) {
+        int result = 0;
+        String[] chars = s.split("");
+        for (int i = 0; i < chars.length -1 ; i++) {
+            if(Integer.valueOf(chars[i]) <= 26 &&  Integer.valueOf(chars[i]) > 0)
+                result++;
+            Integer sum = Integer.valueOf(chars[i]) * 10 + Integer.valueOf(chars[i+1]);
+            if (sum <= 26 && sum > 0){
+                result++;
+            }
+        }
+        return result;
+    }
 }
