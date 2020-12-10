@@ -5,6 +5,7 @@ public class Practice {
 //        generateParenthesis(3).stream().forEach(x -> System.out.print(x));
 //        System.out.println(mostDuplicateSum(new int[] {1,2,3,4,5,6,7,8,9}));
         System.out.println(numDecoding("12"));
+        System.out.println(largestRectangleArea(new int[] {2,1,5,6,2,3}));
     }
     /**
      * Definition for singly-linked list.
@@ -422,5 +423,32 @@ public class Practice {
             }
         }
         return result;
+    }
+    public static int largestRectangleArea(int[] heights) {
+        int maxArea = 0;
+        int maxHeight = 0;
+        for (int i = 0; i < heights.length; i++) {
+            if (heights[i] > maxHeight)
+                maxHeight = heights[i];
+        }
+        for (int k = 1; k < maxHeight; k++) {
+            int length = 0;
+            int tempLength = 0;
+            for (int j = 0; j<heights.length; j++) {
+                if (heights[j] >= k)
+                    length++;
+                else {
+                    if (length > tempLength)
+                        tempLength = length;
+                    length = 0;
+                }
+            }
+            if (tempLength > length)
+                length = tempLength;
+            int area = length * k;
+            if (area > maxArea)
+                maxArea = area;
+        }
+        return maxArea;
     }
 }
